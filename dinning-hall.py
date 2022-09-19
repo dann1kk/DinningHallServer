@@ -152,7 +152,7 @@ threads = []
 app = Flask(__name__)
 
 
-@app.route('/distribution', methods=['POST'])
+@app.route('/distribution', methods=['GET', 'POST'])
 def distribution():
     order = request.get_json()
     print(f'Received order from kitchen. Order ID: {order["order_id"]}')
@@ -170,6 +170,7 @@ class Waiter(threading.Thread):
     # Make a loop to search for orders
     def run(self):
         while True:
+            time.sleep(2)
             self.search_order()
 
     def search_order(self):
@@ -185,6 +186,7 @@ class Waiter(threading.Thread):
                 'table_id': Order['table_id'],
                 'waiter_id': self.id,
                 'items': Order['items'],
+                'priority': Order['priority']
             })
             time.sleep(random.randint(2, 4) * Time_Unit)
 
@@ -202,6 +204,7 @@ class Customers(threading.Thread):
     # Make a loop of creating orders
     def run(self):
         while True:
+            time.sleep(2)
             self.create_order()
 
     def create_order(self):
