@@ -1,0 +1,25 @@
+services:
+  kitchen:
+    image: kitchen
+    container_name: kitchen
+    build:
+      context: ./KitchenServer
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    networks:
+      - local
+  dinninghall:
+    image: dinninghall
+    container_name: dinninghall 
+    build:
+      context: ./DinningHallServer
+      dockerfile: Dockerfile
+    ports: 
+      - "8081:80"
+    networks:
+      - local
+
+networks:
+  local:
+    driver: bridge

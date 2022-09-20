@@ -190,7 +190,7 @@ class Waiter(threading.Thread):
             })
             time.sleep(random.randint(2, 4) * Time_Unit)
 
-            requests.post('http://localhost:8080/order', json=payload, timeout=0.0000000001)
+            requests.post('http://kitchen:80/order', json=payload, timeout=0.0000000001)
 
         except (queue.Empty, requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError) as e:
             pass
@@ -226,7 +226,7 @@ class Customers(threading.Thread):
 
 
 def run_dinning_hall():
-    main_thread = threading.Thread(target=lambda: app.run(host='0.0.0.0', port=8081, debug=False, use_reloader=False),
+    main_thread = threading.Thread(target=lambda: app.run(host='0.0.0.0', port=80, debug=False, use_reloader=False),
                                    daemon=True)
     main_thread.start()
     print("Dinning-hall is running!")
