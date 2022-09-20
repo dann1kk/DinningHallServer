@@ -5,9 +5,9 @@ import time
 import requests
 from flask import Flask, request
 import threading
-from imports.Menu import *
-from imports.Tables import *
-from imports.Waiters import *
+from Menu import *
+from Tables import *
+from Waiters import *
 
 Orders = queue.Queue()
 Orders.join()
