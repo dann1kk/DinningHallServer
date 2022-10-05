@@ -18,3 +18,9 @@ The following repository contains only dinning hall part.
 * Added initial logic for random order generation 
 * Added initial logic for cooking process, receiving orders, preparing them and sending back
 * Configuration of docker containers
+
+## Second Checkpoint
+* Added logic for checking if received order is the same as requested and logic of serving foods
+* Added cooks multitasking according to proficiency 
+* Added max_time and restaurant rating 
+* Added logic in cooking process, cooking foods according to rank
