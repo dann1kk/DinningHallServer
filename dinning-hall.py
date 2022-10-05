@@ -24,6 +24,8 @@ app = Flask(__name__)
 def distribution():
     order = request.get_json()
     print(f'Received order from kitchen. Order ID: {order["order_id"]}')
+    table_id = next((i for i, table in enumerate(Tables) if table['id'] == order['table_id']), None)
+    Tables[table_id]['state'] = "waiting for the order to be served"
     waiter_thread: Waiter = next((w for w in threads if type(w) == Waiter and w.id == order['waiter_id']), None)
     waiter_thread.serve_order(order)
     return {'isSuccess': True}
@@ -171,9 +173,6 @@ def run_dinning_hall():
         th.start()
     for th in threads:
         th.join()
-
-    while True:
-        pass
 
 
 if __name__ == '__main__':
