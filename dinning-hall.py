@@ -40,7 +40,6 @@ class Waiter(threading.Thread):
     # Make a loop to search for orders
     def run(self):
         while True:
-            time.sleep(2)
             self.search_order()
 
     def search_order(self):
@@ -77,8 +76,27 @@ class Waiter(threading.Thread):
             order_served = int(time.time())
             order_picked_up = int(ordered_order['time_start'])
             Total_order_time = order_served - order_picked_up
+            
+            order_stars = {'order_id': ordered_order['order_id']}
+            if ordered_order['max_wait'] > Total_order_time:
+                order_stars['star'] = 5
+            elif ordered_order['max_wait'] * 1.1 > Total_order_time:
+                order_stars['star'] = 4
+            elif ordered_order['max_wait'] * 1.2 > Total_order_time:
+                order_stars['star'] = 3
+            elif ordered_order['max_wait'] * 1.3 > Total_order_time:
+                order_stars['star'] = 2
+            elif ordered_order['max_wait'] * 1.4 > Total_order_time:
+                order_stars['star'] = 1
+            else:
+                order_stars['star'] = 0
 
-            served_order = {**ordered_order, 'Serving_time': Total_order_time, 'status': 'DONE'}
+            Order_rating.append(order_stars)
+            sum_stars = sum(feedback['star'] for feedback in Order_rating)
+            avg = float(sum_stars / len(Order_rating))
+
+            
+            served_order = {**ordered_order, 'Serving_time': Total_order_time, 'status': 'DONE', 'Stars_feedback':order_stars}
             Orders_done.append(served_order)
             print( f'Order served: \n'
                       f'Order Id: {served_order["order_id"]}\n'
@@ -87,7 +105,9 @@ class Waiter(threading.Thread):
                       f'Items: {served_order["items"]}\n'
                       f'Priority: {served_order["priority"]}\n'
                       f'Max Wait: {served_order["max_wait"]}\n'
-                      f'Waiting time: {served_order["Serving_time"]}'
+                      f'Waiting time: {served_order["Serving_time"]}\n'
+                      f'Stars: {served_order["Stars_feedback"]}\n'
+                      f'Restaurant rating: {avg}'
                       )
 # Class for customers which extends thread
 class Customers(threading.Thread):
@@ -97,7 +117,7 @@ class Customers(threading.Thread):
     # Make a loop of creating orders
     def run(self):
         while True:
-            time.sleep(2)
+            time.sleep(1)
             self.create_order()
 
     def create_order(self):
@@ -126,11 +146,18 @@ class Customers(threading.Thread):
             Orders_stack.append(order)
             Tables[table_id]['state'] = "waiting to make a order"
             Tables[table_id]['order_id'] = order_id
+        else:
+            time.sleep(random.randint(2, 10) * Time_Unit)
+            idxs = [table for table in Tables if table['state'] == "Free"]
+            if len(idxs):
+                rand_idx = random.randrange(len(idxs))
+                Tables[rand_idx]['state'] = "Free"
+
 
 def run_dinning_hall():
     main_thread = threading.Thread(target=lambda: app.run(host='0.0.0.0', port=8080, debug=False, use_reloader=False),
                                    daemon=True)
-    main_thread.start()
+    threads.append(main_thread)
     print("Dinning-hall is running!")
     # create customer thread
     customer_thread = Customers()
